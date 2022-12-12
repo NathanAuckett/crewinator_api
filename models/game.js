@@ -20,6 +20,17 @@ function createGame(req, res){
     });
 }
 
+function getByTitle(req, res){
+    const sql = mysql.format(`SELECT * FROM games WHERE title LIKE ?`, '%' + req.query.title + '%');
+
+    console.log(sql);
+
+    connection.query(sql,  (err, result) => {
+        if (err) throw err;
+        res.send({result: 200, data: result});
+    });
+}
+
 function getAll(res){
     connection.query("SELECT * FROM games",  (err, result) => {
         if (err) throw err;
@@ -30,5 +41,6 @@ function getAll(res){
 module.exports = {
     Game,
     createGame,
-    getAll
+    getAll,
+    getByTitle
 }

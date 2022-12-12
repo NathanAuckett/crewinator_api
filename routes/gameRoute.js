@@ -7,7 +7,12 @@ router.post("/create", (req, res) => {
 });
 
 router.get("/", (req, res) => {
-  Controllers.GameController.getGames(res);
+  if (req.query.title){
+    Controllers.GameController.getByTitle(req, res);
+  }
+  else{
+    Controllers.GameController.getGames(res);
+  }
 });
 
 module.exports = router;
