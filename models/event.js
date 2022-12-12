@@ -35,12 +35,8 @@ function getByMonth(req, res){
 function getFuture(res){
     const sql = mysql.format(`SELECT * from events WHERE start_date_time >= UTC_TIMESTAMP() ORDER BY start_date_time`);
 
-    console.log(sql);
-
     connection.query(sql, (err, result) => {
         if (err) throw err;
-        //console.log(result.data[0].start_date_time);
-        console.log(result);
         res.send({result: 200, data: result});
     });
 }
