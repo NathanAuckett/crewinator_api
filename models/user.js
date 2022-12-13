@@ -25,7 +25,6 @@ async function createUser(req, res){
 async function authenticateUser(req, res){
     console.log(req);
     
-    const username = req.username;
     const email = req.email;
     
     const sql = mysql.format(`SELECT * FROM users WHERE email = ?`, email);
@@ -36,10 +35,11 @@ async function authenticateUser(req, res){
         if (result.length > 0){
             console.log("Found a user:");
             console.log(result);
+            const user = result[0];
 
-            if (await bcrypt.compare(req.password, result[0].password)){
+            if (await bcrypt.compare(req.password, user.password)){
                 console.log("Login success!");
-                res.send({result: 200, data: `Login success!`});
+                res.send({result: 200, data: {id: user.id, username: user.username}});
             }
             else{
                 res.send({result: 400, data: `Password incorrect!`});
@@ -51,6 +51,7 @@ async function authenticateUser(req, res){
         
     });
 }
+
 
 function getAll(res){
     connection.query("SELECT * FROM crewinator.users",  (err, result) => {
