@@ -52,6 +52,16 @@ async function authenticateUser(req, res){
     });
 }
 
+function getUserByEmail(req, res){
+    const sql = mysql.format(`SELECT * FROM users WHERE email = ?`, [req.query.email]);
+
+    console.log(sql);
+
+    connection.query(sql,  (err, result) => {
+        if (err) throw err;
+        res.send({result: 200, data: result});
+    });
+}
 
 function getAll(res){
     connection.query("SELECT * FROM crewinator.users",  (err, result) => {
@@ -64,5 +74,6 @@ module.exports = {
     User,
     createUser,
     authenticateUser,
+    getUserByEmail,
     getAll
 }

@@ -1,13 +1,15 @@
 const Models = require('../models/index');
 
 function createUser(req, res){
-    console.log(req);
     Models.User.createUser(req, res);
 }
 
 function authenticateUser(req, res){
-    console.log(req);
     Models.User.authenticateUser(req, res);
+}
+
+function getUserByEmail(req, res){
+    Models.User.getUserByEmail(req, res);
 }
 
 function getUsers(res){
@@ -17,5 +19,6 @@ function getUsers(res){
 module.exports = {
     createUser,
     authenticateUser,
+    getUserByEmail,
     getUsers
 }
