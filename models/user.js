@@ -64,7 +64,7 @@ function getUserByEmail(req, res){
 }
 
 function getAll(res){
-    connection.query("SELECT * FROM crewinator.users",  (err, result) => {
+    connection.query("SELECT * FROM users",  (err, result) => {
         if (err) throw err;
         res.send({result: 200, data: result});
     });

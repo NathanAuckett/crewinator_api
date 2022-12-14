@@ -19,14 +19,12 @@ function createGameUser(req, res){
 
 function getGamesByUserID(req, res){
     const sql = mysql.format(`
-        SELECT games.id, games.title, games.description, games.image_url
+        SELECT games.game_id, games.title, games.description, games.image_url
         FROM games, game_users
         
-        WHERE games.id = game_users.game_id
+        WHERE games.game_id = game_users.game_id
         AND game_users.user_id = ?`,
     [req.query.user_id]);
-
-    console.log(sql);
 
     connection.query(sql,  (err, result) => {
         if (err) throw err;

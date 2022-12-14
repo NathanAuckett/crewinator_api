@@ -15,7 +15,7 @@ function createFriend(req, res){
     const findUserSQL = mysql.format(`SELECT * FROM users WHERE email = ?`, [email]);
     connection.query(findUserSQL,  (err, result) => { //Search for user with email
         if (err) throw err;
-        
+
         if (result.length > 0){
             const user_id2 = result[0].id;
 
@@ -40,19 +40,53 @@ function createFriend(req, res){
 
 function getFriendsByUserID(req, res){
     const sql = mysql.format(`
-        SELECT users.id, users.username
+        SELECT users.user_id, users.username
         FROM users, friends
         
         WHERE status = 'accepted'
         AND
-        friends.user_id1 = ?
-        AND users.id = friends.user_id2
-        OR friends.user_id2 = ?
-        AND users.id = friends.user_id1`,
+        ((friends.user_id1 = ?
+        AND users.user_id = friends.user_id2)
+        OR
+        (friends.user_id2 = ?
+        AND users.user_id = friends.user_id1))`,
     [req.query.user_id, req.query.user_id]);
+    
+    console.log(sql);
 
     connection.query(sql,  (err, result) => {
         if (err) throw err;
+        console.log(result);
+        res.send({result: 200, data: result});
+    });
+}
+
+function getPendingFriendsByUserID(req, res){
+    const sql = mysql.format(`
+        SELECT users.user_id, users.username, friends.friend_id
+        FROM users, friends
+        
+        WHERE status = 'pending'
+        AND
+        friends.user_id2 = ?
+        AND users.user_id = friends.user_id1`,
+    [req.query.user_id]);
+
+    connection.query(sql,  (err, result) => {
+        if (err) throw err;
+        res.send({result: 200, data: result});
+    });
+}
+
+function setFriendshipStatus(req, res){
+    const sql = mysql.format(`
+        UPDATE friends SET ? WHERE id = ?`, [{'status': req.status}, req.id]);
+
+    console.log(sql);
+    
+    connection.query(sql,  (err, result) => {
+        if (err) throw err;
+        console.log(result);
         res.send({result: 200, data: result});
     });
 }
@@ -68,5 +102,7 @@ module.exports = {
     Friend,
     createFriend,
     getFriendsByUserID,
+    getPendingFriendsByUserID,
+    setFriendshipStatus,
     getAll,
 }

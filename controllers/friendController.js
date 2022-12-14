@@ -8,7 +8,17 @@ function getFriendsByUserID(req, res){
     Models.Friend.getFriendsByUserID(req, res);
 }
 
+function getPendingFriendsByUserID(req, res){
+    Models.Friend.getPendingFriendsByUserID(req, res);
+}
+
+function setFriendshipStatus(req, res){
+    Models.Friend.setFriendshipStatus(req, res);
+}
+
 module.exports = {
     createFriend,
-    getFriendsByUserID
+    getFriendsByUserID,
+    getPendingFriendsByUserID,
+    setFriendshipStatus
 }
