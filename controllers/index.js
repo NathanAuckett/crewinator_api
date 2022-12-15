@@ -3,5 +3,6 @@ module.exports = {
     EventController: require('./eventController'),
     GameController: require('./gameController'),
     GameUserController: require('./gameUserController'),
-    FriendController: require('./friendController')
+    FriendController: require('./friendController'),
+    EventInviteController: require('./eventInviteController')
 };

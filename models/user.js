@@ -29,7 +29,7 @@ async function createUser(req, res){
                     else{
                         const token = jwt.sign({username: req.username, email: req.email}, process.env.JWT_KEY, {expiresIn: '7d'});
 
-                        result[0].token = token;
+                        res.cookie('token', token, {httpOnly: true});
                         res.send({result: 200, data: result});
                     }
                 });
@@ -59,7 +59,7 @@ async function authenticateUser(req, res){
                     const token = jwt.sign({username: req.username, email: req.email}, process.env.JWT_KEY, {expiresIn: '7d'});
 
                     res.cookie('token', token, {httpOnly: true});
-                    res.send({result: 200, data: {user_id: user.user_id, username: user.username, token: token}});
+                    res.send({result: 200, data: {user_id: user.user_id, username: user.username}});
                 }
                 else{
                     res.send({result: 400, data: `Password incorrect!`});

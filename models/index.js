@@ -3,5 +3,6 @@ module.exports = {
     Event: require('./event'),
     Game: require('./game'),
     GameUser: require('./gameUser'),
-    Friend: require('./friend')
+    Friend: require('./friend'),
+    EventInvite: require('./eventInvite')
 };

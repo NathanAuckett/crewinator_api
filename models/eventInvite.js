@@ -5,14 +5,14 @@ function EventInvite(eventID, userID) {
     this.event_id = eventID;
     this.user_id = userID;
     this.status = "pending";
-    this.request_date = new Date();
+    this.invite_date = new Date();
 }
 
 function createEventInvite(req, res){
     const event_id = req.event_id;
-    const user_id1 = req.user_id;
+    const user_id = req.user_id;
 
-    const invite = new EventInvite(event_id, user_id1);
+    const invite = new EventInvite(event_id, user_id);
 
     const sql = mysql.format(`INSERT INTO event_invites SET ?`, invite);
     connection.query(sql,  (err, result) => { //Create friend within DB
@@ -21,22 +21,12 @@ function createEventInvite(req, res){
     });
 }
 
-function getFriendsByUserID(req, res){
+function setEventInviteStatus(req, res){
     const sql = mysql.format(`
-        SELECT users.user_id, users.username
-        FROM users, friends
-        
-        WHERE status = 'accepted'
-        AND
-        ((friends.user_id1 = ?
-        AND users.user_id = friends.user_id2)
-        OR
-        (friends.user_id2 = ?
-        AND users.user_id = friends.user_id1))`,
-    [req.query.user_id, req.query.user_id]);
-    
-    console.log(sql);
+        UPDATE event_invites SET ? WHERE event_invite_id = ?`, [{'status': req.status}, req.event_invite_id]);
 
+    console.log(sql);
+    
     connection.query(sql,  (err, result) => {
         if (err) throw err;
         console.log(result);
@@ -44,40 +34,26 @@ function getFriendsByUserID(req, res){
     });
 }
 
-function getPendingFriendsByUserID(req, res){
+function getPendingEventsByUserID(req, res){
     const sql = mysql.format(`
-        SELECT users.user_id, users.username, friends.friend_id
-        FROM users, friends
-        
-        WHERE status = 'pending'
-        AND
-        friends.user_id2 = ?
-        AND users.user_id = friends.user_id1`,
+        SELECT events.*, event_invites.event_invite_id, users.username
+        FROM events LEFT JOIN event_invites ON 1=1, users
+        WHERE events.start_date_time >= UTC_TIMESTAMP()
+        AND event_invites.user_id = ? AND event_invites.event_id = events.event_id AND event_invites.status = 'pending'
+        AND users.user_id = events.creator_user_id
+        ORDER BY events.start_date_time`,
     [req.query.user_id]);
 
     connection.query(sql,  (err, result) => {
-        if (err) throw err;
-        res.send({result: 200, data: result});
-    });
-}
-
-function setFriendshipStatus(req, res){
-    const sql = mysql.format(`
-        UPDATE friends SET ? WHERE friend_id = ?`, [{'status': req.status}, req.id]);
-
-    console.log(sql);
-    
-    connection.query(sql,  (err, result) => {
-        if (err) throw err;
-        console.log(result);
-        res.send({result: 200, data: result});
+        if (err) { console.log(err); }
+        else{
+            res.send({result: 200, data: result});
+        }
     });
 }
 
 module.exports = {
-    Friend,
-    createFriend,
-    getFriendsByUserID,
-    getPendingFriendsByUserID,
-    setFriendshipStatus
+    createEventInvite,
+    setEventInviteStatus,
+    getPendingEventsByUserID
 }

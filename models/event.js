@@ -34,9 +34,9 @@ function getByMonth(req, res){
                 MONTH(events.start_date_time) = ? OR MONTHNAME(start_date_time) = ?
             )
             AND (
-                events.creator_user_id = ?
+                (events.creator_user_id = ?)
                 OR
-                event_invites.user_id = ? AND event_invites.event_id = events.event_id AND event_invites.status = 'accepted'
+                (event_invites.user_id = ? AND event_invites.event_id = events.event_id AND event_invites.status = 'accepted')
             )
         ORDER BY events.start_date_time`,
     [req.query.month, req.query.month, req.query.user_id, req.query.user_id]);
