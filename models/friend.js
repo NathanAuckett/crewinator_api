@@ -80,7 +80,7 @@ function getPendingFriendsByUserID(req, res){
 
 function setFriendshipStatus(req, res){
     const sql = mysql.format(`
-        UPDATE friends SET ? WHERE id = ?`, [{'status': req.status}, req.id]);
+        UPDATE friends SET ? WHERE friend_id = ?`, [{'status': req.status}, req.id]);
 
     console.log(sql);
     
