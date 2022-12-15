@@ -17,7 +17,7 @@ router.get("/", auth, (req, res) => {
 });
 
 router.get("/future", auth, (req, res) => {
-  Controllers.EventController.getFuture(res);
+  Controllers.EventController.getFuture(req, res);
 });
 
 module.exports = router;

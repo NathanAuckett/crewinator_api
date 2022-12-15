@@ -1,40 +1,23 @@
 const connection = require('../dbConnect');
 const mysql = require('mysql2');
 
-function Friend(userID1, userID2) {
-    this.user_id1 = userID1;
-    this.user_id2 = userID2;
+function EventInvite(eventID, userID) {
+    this.event_id = eventID;
+    this.user_id = userID;
     this.status = "pending";
     this.request_date = new Date();
 }
 
-function createFriend(req, res){
-    const email = req.email;
+function createEventInvite(req, res){
+    const event_id = req.event_id;
     const user_id1 = req.user_id;
 
-    const findUserSQL = mysql.format(`SELECT * FROM users WHERE email = ?`, [email]);
-    connection.query(findUserSQL,  (err, result) => { //Search for user with email
+    const invite = new EventInvite(event_id, user_id1);
+
+    const sql = mysql.format(`INSERT INTO event_invites SET ?`, invite);
+    connection.query(sql,  (err, result) => { //Create friend within DB
         if (err) throw err;
-
-        if (result.length > 0){
-            const user_id2 = result[0].id;
-
-            if (user_id1 != user_id2){
-                const friend = new Friend(user_id1, user_id2);
-
-                const sql = mysql.format(`INSERT INTO friends SET ?`, friend);
-                connection.query(sql,  (err, result) => { //Create friend within DB
-                    if (err) throw err;
-                    res.send({result: 200, data: result});
-                });
-            }
-            else{
-                res.send({result: 400, data: 'You entered your own email!'});
-            }
-        }
-        else{
-            res.send({result: 400, data: 'No user found with that email!'});
-        }
+        res.send({result: 200, data: result});
     });
 }
 
@@ -51,12 +34,13 @@ function getFriendsByUserID(req, res){
         (friends.user_id2 = ?
         AND users.user_id = friends.user_id1))`,
     [req.query.user_id, req.query.user_id]);
+    
+    console.log(sql);
 
     connection.query(sql,  (err, result) => {
-        if (err) { console.log(err); }
-        else{
-            res.send({result: 200, data: result});
-        }
+        if (err) throw err;
+        console.log(result);
+        res.send({result: 200, data: result});
     });
 }
 
@@ -72,10 +56,8 @@ function getPendingFriendsByUserID(req, res){
     [req.query.user_id]);
 
     connection.query(sql,  (err, result) => {
-        if (err) { console.log(err); }
-        else{
-            res.send({result: 200, data: result});
-        }
+        if (err) throw err;
+        res.send({result: 200, data: result});
     });
 }
 
@@ -86,10 +68,9 @@ function setFriendshipStatus(req, res){
     console.log(sql);
     
     connection.query(sql,  (err, result) => {
-        if (err) { console.log(err); }
-        else{
-            res.send({result: 200, data: result});
-        }
+        if (err) throw err;
+        console.log(result);
+        res.send({result: 200, data: result});
     });
 }
 

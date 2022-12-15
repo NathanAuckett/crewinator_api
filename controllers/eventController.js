@@ -12,8 +12,8 @@ function getByMonth(req, res){
     Models.Event.getByMonth(req, res);
 }
 
-function getFuture(res){
-    Models.Event.getFuture(res);
+function getFuture(req, res){
+    Models.Event.getFuture(req, res);
 }
 
 module.exports = {
