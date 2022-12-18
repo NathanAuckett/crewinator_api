@@ -22,17 +22,10 @@ async function createUser(req, res){
         connection.query(sql,  (err, result) => {
             if (err){ console.log(err); }
             else{
-                const sql = mysql.format(`SELECT user_id, username FROM users WHERE email = ?`, [req.email]);
+                const token = jwt.sign({'user_id': result.insertId, 'username': req.username, 'email': req.email}, process.env.JWT_KEY, {expiresIn: '7d'});
 
-                connection.query(sql,  (err, result) => {
-                    if (err){ console.log(err); }
-                    else{
-                        const token = jwt.sign({username: req.username, email: req.email}, process.env.JWT_KEY, {expiresIn: '7d'});
-
-                        res.cookie('token', token, {httpOnly: true});
-                        res.send({result: 200, data: result});
-                    }
-                });
+                res.cookie('token', token, {httpOnly: true});
+                res.status(200).json({'user_id': result.insertId, 'username': req.username});
             }
         });
     }
@@ -56,20 +49,36 @@ async function authenticateUser(req, res){
 
                 if (await bcrypt.compare(req.password, user.password)){
                     console.log("Login success!");
-                    const token = jwt.sign({username: req.username, email: req.email}, process.env.JWT_KEY, {expiresIn: '7d'});
+                    const token = jwt.sign({'user_id':user.user_id, 'username': user.username, 'email': req.email}, process.env.JWT_KEY, {expiresIn: '7d'});
 
                     res.cookie('token', token, {httpOnly: true});
-                    res.send({result: 200, data: {user_id: user.user_id, username: user.username}});
+                    res.status(200).json({user_id: user.user_id, username: user.username});
                 }
                 else{
-                    res.send({result: 400, data: `Password incorrect!`});
+                    res.status(400).send('Password incorrect!');
                 }
             }
             else{
-                res.send({result: 400, data: `Email does not exist!`});
+                res.status(400).send('Email does not exist!');
             }
         }
     });
+}
+
+async function authenticateUserToken(req, res){
+    const token = req.cookies.token;
+    console.log(token);
+
+    const decodedToken = jwt.decode(token);
+    console.log(decodedToken);
+
+    res.status(200).json({user_id: decodedToken.user_id, username: decodedToken.username});
+}
+
+function logout(req, res){
+    res.cookie('token', 'none', {expires: new Date(Date.now() + 5 * 1000), httpOnly: true });
+
+    res.send({result: 200, data: `Logout success!`});
 }
 
 function getUserByEmail(req, res){
@@ -91,9 +100,10 @@ function getAll(res){
 }
 
 module.exports = {
-    User,
     createUser,
     authenticateUser,
     getUserByEmail,
-    getAll
+    getAll,
+    logout,
+    authenticateUserToken
 }

@@ -94,7 +94,6 @@ function setFriendshipStatus(req, res){
 }
 
 module.exports = {
-    Friend,
     createFriend,
     getFriendsByUserID,
     getPendingFriendsByUserID,

@@ -13,8 +13,13 @@ function getByTitle(req, res){
     Models.Game.getByTitle(req, res);
 }
 
+function deleteGame(req, res){
+    Models.Game.deleteGame(req, res);
+}
+
 module.exports = {
     createGame,
     getGames,
-    getByTitle
+    getByTitle,
+    deleteGame
 }

@@ -21,7 +21,18 @@ function createGame(req, res){
 }
 
 function getByTitle(req, res){
-    const sql = mysql.format(`SELECT * FROM games WHERE title LIKE ?`, '%' + req.query.title + '%');
+    const sql = mysql.format(`SELECT * FROM games WHERE title LIKE ? LIMIT 50`, '%' + req.query.title + '%');
+
+    console.log(sql);
+
+    connection.query(sql,  (err, result) => {
+        if (err) throw err;
+        res.send({result: 200, data: result});
+    });
+}
+
+function deleteGame(req, res){
+    const sql = mysql.format(`DELETE FROM games WHERE game_id = ?`, [req.query.game_id]);
 
     console.log(sql);
 
@@ -32,7 +43,7 @@ function getByTitle(req, res){
 }
 
 function getAll(res){
-    connection.query("SELECT * FROM games",  (err, result) => {
+    connection.query("SELECT * FROM games LIMIT 50",  (err, result) => {
         if (err) throw err;
         res.send({result: 200, data: result});
     });
@@ -42,5 +53,6 @@ module.exports = {
     Game,
     createGame,
     getAll,
-    getByTitle
+    getByTitle,
+    deleteGame
 }

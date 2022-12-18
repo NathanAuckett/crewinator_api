@@ -16,4 +16,8 @@ router.get("/", auth, (req, res) => {
   }
 });
 
+router.delete("/delete", auth, (req, res) => {
+  Controllers.GameController.deleteGame(req, res);
+});
+
 module.exports = router;

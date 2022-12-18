@@ -16,9 +16,14 @@ function getFuture(req, res){
     Models.Event.getFuture(req, res);
 }
 
+function deleteEvent(req, res){
+    Models.Event.deleteEvent(req, res);
+}
+
 module.exports = {
     createEvent,
     getEvents,
     getByMonth,
-    getFuture
+    getFuture,
+    deleteEvent
 }

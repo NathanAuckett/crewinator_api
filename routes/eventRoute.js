@@ -20,4 +20,8 @@ router.get("/future", auth, (req, res) => {
   Controllers.EventController.getFuture(req, res);
 });
 
+router.delete("/delete", auth, (req, res) => {
+  Controllers.EventController.deleteEvent(req, res);
+});
+
 module.exports = router;

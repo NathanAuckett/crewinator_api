@@ -19,7 +19,7 @@ function createGameUser(req, res){
 
 function getGamesByUserID(req, res){
     const sql = mysql.format(`
-        SELECT games.game_id, games.title, games.description, games.image_url
+        SELECT games.*
         FROM games, game_users
         
         WHERE games.game_id = game_users.game_id
@@ -40,7 +40,6 @@ function getAll(res){
 }
 
 module.exports = {
-    GameUser,
     createGameUser,
     getGamesByUserID
 }
