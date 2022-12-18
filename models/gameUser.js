@@ -7,36 +7,57 @@ function GameUser(gameID, userID) {
 }
 
 function createGameUser(req, res){
-    const gameUser = new GameUser(req.game_id, req.user_id);
+    try {
+        const gameUser = new GameUser(req.game_id, req.user_id);
 
-    const sql = mysql.format(`INSERT INTO game_users SET ?`, gameUser);
+        const sql = mysql.format(`INSERT INTO game_users SET ?`, gameUser);
 
-    connection.query(sql,  (err, result) => {
-        if (err) throw err;
-        res.send({result: 200, data: result});
-    });
+        connection.query(sql,  (err, result) => {
+            if (err) throw err;
+            //res.send({result: 200, data: result});
+            res.status(200).json(result);
+        });
+    }
+    catch (err){
+        res.status(500).send('Server error! Request failed!');
+        console.log(err);
+    }
 }
 
 function getGamesByUserID(req, res){
-    const sql = mysql.format(`
-        SELECT games.*
-        FROM games, game_users
-        
-        WHERE games.game_id = game_users.game_id
-        AND game_users.user_id = ?`,
-    [req.query.user_id]);
+    try {
+        const sql = mysql.format(`
+            SELECT games.*
+            FROM games, game_users
+            
+            WHERE games.game_id = game_users.game_id
+            AND game_users.user_id = ?`,
+        [req.query.user_id]);
 
-    connection.query(sql,  (err, result) => {
-        if (err) throw err;
-        res.send({result: 200, data: result});
-    });
+        connection.query(sql,  (err, result) => {
+            if (err) throw err;
+            //res.send({result: 200, data: result});
+            res.status(200).json(result);
+        });
+    }
+    catch (err){
+        res.status(500).send('Server error! Request failed!');
+        console.log(err);
+    }
 }
 
 function getAll(res){
-    connection.query("SELECT * FROM game_users",  (err, result) => {
-        if (err) throw err;
-        res.send({result: 200, data: result});
-    });
+    try {
+        connection.query("SELECT * FROM game_users",  (err, result) => {
+            if (err) throw err;
+            //res.send({result: 200, data: result});
+            res.status(200).json(result);
+        });
+    }
+    catch (err){
+        res.status(500).send('Server error! Request failed!');
+        console.log(err);
+    }
 }
 
 module.exports = {

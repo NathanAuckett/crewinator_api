@@ -17,5 +17,5 @@ app.use("/friends", require('./routes/friendRoute'));
 app.use("/event-invites", require('./routes/eventInviteRoute'));
 
 app.listen(port, () => {
-    console.log(`Listening on port ${port}`)
+    console.log(`Listening on port ${process.env.API_PORT}`)
 })

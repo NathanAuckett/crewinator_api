@@ -112,7 +112,8 @@ function getAll(res){
         connection.query("SELECT * FROM events ORDER BY start_date_time", (err, result) => {
             if (err) { console.log(err); }
             else{
-                res.send({result: 200, data: result});
+                //res.send({result: 200, data: result});
+                res.status(200).json(result);
             }
         });
     }

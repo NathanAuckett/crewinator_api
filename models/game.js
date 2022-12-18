@@ -10,47 +10,80 @@ function Game(title, description, imageURL) {
 }
 
 function createGame(req, res){
-    const game = new Game(req.title, req.description, req.image_url);
+    try{
+        const game = new Game(req.title, req.description, req.image_url);
 
-    const sql = mysql.format(`INSERT INTO games SET ?`, game);
+        const sql = mysql.format(`INSERT INTO games SET ?`, game);
 
-    connection.query(sql,  (err, result) => {
-        if (err) throw err;
-        res.send({result: 200, data: result});
-    });
+        connection.query(sql,  (err, result) => {
+            if (err){ console.log(err); }
+            else{
+                //res.send({result: 200, data: result});
+                res.status(200).json(result);
+            }
+        });
+    }
+    catch (err){
+        res.status(500).send('Server error! Request failed!');
+        console.log(err);
+    }
 }
 
 function getByTitle(req, res){
-    const sql = mysql.format(`SELECT * FROM games WHERE title LIKE ? LIMIT 50`, '%' + req.query.title + '%');
+    try {
+        const sql = mysql.format(`SELECT * FROM games WHERE title LIKE ? LIMIT 50`, '%' + req.query.title + '%');
 
-    console.log(sql);
-
-    connection.query(sql,  (err, result) => {
-        if (err) throw err;
-        res.send({result: 200, data: result});
-    });
+        connection.query(sql,  (err, result) => {
+            if (err){ console.log(err); }
+            else{
+                //res.send({result: 200, data: result});
+                res.status(200).json(result);
+            }
+        });
+    }
+    catch (err){
+        res.status(500).send('Server error! Request failed!');
+        console.log(err);
+    }
 }
 
 function deleteGame(req, res){
-    const sql = mysql.format(`DELETE FROM games WHERE game_id = ?`, [req.query.game_id]);
+    try {
+        const sql = mysql.format(`DELETE FROM games WHERE game_id = ?`, [req.query.game_id]);
 
-    console.log(sql);
+        console.log(sql);
 
-    connection.query(sql,  (err, result) => {
-        if (err) throw err;
-        res.send({result: 200, data: result});
-    });
+        connection.query(sql,  (err, result) => {
+            if (err){ console.log(err); }
+            else{
+                //res.send({result: 200, data: result});
+                res.status(200).json(result);
+            }
+        });
+    }
+    catch (err){
+        res.status(500).send('Server error! Request failed!');
+        console.log(err);
+    }
 }
 
 function getAll(res){
-    connection.query("SELECT * FROM games LIMIT 50",  (err, result) => {
-        if (err) throw err;
-        res.send({result: 200, data: result});
-    });
+    try {
+        connection.query("SELECT * FROM games LIMIT 50",  (err, result) => {
+            if (err){ console.log(err); }
+            else{
+                //res.send({result: 200, data: result});
+                res.status(200).json(result);
+            }
+        });
+    }
+    catch (err){
+        res.status(500).send('Server error! Request failed!');
+        console.log(err);
+    }
 }
 
 module.exports = {
-    Game,
     createGame,
     getAll,
     getByTitle,
