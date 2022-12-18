@@ -1,4 +1,5 @@
 # Crewinator API
+This is the API that powers [Crewinator](https://github.com/NathanAuckett/crewinator)
 
 ## Requirements
 - MySQL
