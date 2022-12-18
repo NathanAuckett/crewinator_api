@@ -17,8 +17,9 @@ function createFriend(req, res){
         connection.query(findUserSQL,  (err, result) => { //Search for user with email
             if (err) { console.log(err); }
             else{
+                console.log(result);
                 if (result.length > 0){
-                    const user_id2 = result[0].id;
+                    const user_id2 = result[0].user_id;
 
                     if (user_id1 !== user_id2){
                         const friend = new Friend(user_id1, user_id2);
@@ -27,18 +28,15 @@ function createFriend(req, res){
                         connection.query(sql,  (err, result) => { //Create friend within DB
                             if (err) { console.log(err); }
                             else{
-                                //res.send({result: 200, data: result});
                                 res.status(200).json(result);
                             }
                         });
                     }
                     else{
-                        //res.send({result: 400, data: 'You entered your own email!'});
                         res.status(400).send('You entered your own email!');
                     }
                 }
                 else{
-                    //res.send({result: 400, data: 'No user found with that email!'});
                     res.status(400).send('No user found with that email!');
                 }
             }

@@ -1,6 +1,8 @@
 const connection = require('../dbConnect');
 const mysql = require('mysql2');
 
+const Invite = require('./eventInvite');
+
 function Event(title, eventDate, creatorID, imageURL) {
     this.title = title;
     this.start_date_time = eventDate;
@@ -12,6 +14,7 @@ function Event(title, eventDate, creatorID, imageURL) {
 
 function createEvent(req, res){
     try {
+        console.log(req);
         const event = new Event(req.title, new Date(req.start_date_time), req.creator_user_id, req.image_url);
 
         const sql = mysql.format(`INSERT INTO events SET ?`, event);
@@ -19,7 +22,25 @@ function createEvent(req, res){
         connection.query(sql,  (err, result) => {
             if (err) { console.log(err); }
             else{
-                //res.send({result: 200, data: result});
+                console.log(result);
+                const event_id = result.insertId;
+
+                const friends = req.friends;
+                if (friends !== null){
+                    for (friend of friends){
+                        console.log(friend);
+                        let invite = new Invite.EventInvite(event_id, friend.user_id);
+
+                        const sql = mysql.format(`INSERT INTO event_invites SET ?`, invite);
+                        connection.query(sql,  (err, result) => { //Create friend within DB
+                            if (err) { console.log(err); }
+                            else{
+                                console.log(result);
+                            }
+                        });
+                    }
+                }
+
                 res.status(200).json(result);
             }
         });
@@ -33,7 +54,7 @@ function createEvent(req, res){
 function getByMonth(req, res){
     try {
         const sql = mysql.format(`
-            SELECT events.*
+            SELECT events.event_id, events.title, events.start_date_time
             FROM events LEFT JOIN event_invites ON 1=1
             WHERE 
                 (
@@ -44,13 +65,13 @@ function getByMonth(req, res){
                     OR
                     (event_invites.user_id = ? AND event_invites.event_id = events.event_id AND event_invites.status = 'accepted')
                 )
+            GROUP BY events.event_id, events.title, events.start_date_time
             ORDER BY events.start_date_time`,
         [req.query.month, req.query.month, req.query.user_id, req.query.user_id]);
 
         connection.query(sql,  (err, result) => {
             if (err) { console.log(err); }
             else{
-                //res.send({result: 200, data: result});
                 res.status(200).json(result);
             }
         });
@@ -68,7 +89,6 @@ function deleteEvent(req, res){
         connection.query(sql,  (err, result) => {
             if (err) { console.log(err); }
             else{
-                //res.send({result: 200, data: result});
                 res.status(200).json(result);
             }
         });
@@ -82,7 +102,7 @@ function deleteEvent(req, res){
 function getFuture(req, res){
     try {
         const sql = mysql.format(`
-            SELECT events.*
+            SELECT events.event_id, events.title, events.start_date_time, events.image_url
             FROM events LEFT JOIN event_invites ON 1=1
             WHERE events.start_date_time >= UTC_TIMESTAMP()
             AND (
@@ -90,13 +110,15 @@ function getFuture(req, res){
                 OR
                 (event_invites.user_id = ? AND event_invites.event_id = events.event_id AND event_invites.status = 'accepted')
             )
-            ORDER BY events.start_date_time`,
+            GROUP BY events.event_id, events.title, events.start_date_time, events.image_url
+            ORDER BY events.start_date_time
+            `,
+            
         [req.query.user_id, req.query.user_id]);
 
         connection.query(sql, (err, result) => {
             if (err) { console.log(err); }
             else{
-                //res.send({result: 200, data: result});
                 res.status(200).json(result);
             }
         });

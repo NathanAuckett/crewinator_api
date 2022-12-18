@@ -1,9 +1,8 @@
 const connection = require('../dbConnect');
 const mysql = require('mysql2');
 
-function Game(title, description, imageURL) {
+function Game(title, imageURL) {
     this.title = title;
-    this.description = description || "";
     this.image_url = imageURL || "";
     this.creation_date = new Date();
     this.last_update = new Date();
@@ -11,14 +10,13 @@ function Game(title, description, imageURL) {
 
 function createGame(req, res){
     try{
-        const game = new Game(req.title, req.description, req.image_url);
+        const game = new Game(req.title, req.image_url);
 
         const sql = mysql.format(`INSERT INTO games SET ?`, game);
 
         connection.query(sql,  (err, result) => {
             if (err){ console.log(err); }
             else{
-                //res.send({result: 200, data: result});
                 res.status(200).json(result);
             }
         });

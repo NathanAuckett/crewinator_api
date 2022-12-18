@@ -78,8 +78,19 @@ async function authenticateUserToken(req, res){
 
         const decodedToken = jwt.decode(token);
         console.log(decodedToken);
-
-        res.status(200).json({user_id: decodedToken.user_id, username: decodedToken.username});
+        
+        const sql = mysql.format(`SELECT * FROM users WHERE user_id = ? AND username = ? AND email = ? `, [decodedToken.user_id, decodedToken.username, decodedToken.email]);
+        connection.query(sql,  async (err, result) => {
+            if (err) { console.log(err); }
+            else{
+                if (result.length > 0){
+                    res.status(200).json({user_id: decodedToken.user_id, username: decodedToken.username});
+                }
+                else{
+                    res.status(400).send('Invalid token!');
+                }
+            }
+        });
     }
     catch (err){
         res.status(500).send('Server error! Request failed!');
@@ -108,8 +119,12 @@ function getUserByEmail(req, res){
 
         connection.query(sql,  (err, result) => {
             if (err) throw err;
-            //res.send({result: 200, data: result});
-            res.status(200).json(result);
+            if (result.length > 0){
+                res.status(200).json(result);
+            }
+            else{
+                res.status(100).send("No user with that email exists!");
+            }
         });
     }
     catch (err){

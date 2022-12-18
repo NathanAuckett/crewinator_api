@@ -19,7 +19,6 @@ function createEventInvite(req, res){
         connection.query(sql,  (err, result) => { //Create friend within DB
             if (err) { console.log(err); }
             else{
-                //res.send({result: 200, data: result});
                 res.status(200).json(result);
             }
         });
@@ -32,8 +31,7 @@ function createEventInvite(req, res){
 
 function setEventInviteStatus(req, res){
     try {
-        const sql = mysql.format(`
-            UPDATE event_invites SET ? WHERE event_invite_id = ?`, [{'status': req.status}, req.event_invite_id]);
+        const sql = mysql.format(`UPDATE event_invites SET ? WHERE event_invite_id = ?`, [{'status': req.status}, req.event_invite_id]);
 
         console.log(sql);
         
@@ -76,6 +74,7 @@ function getPendingEventsByUserID(req, res){
 }
 
 module.exports = {
+    EventInvite,
     createEventInvite,
     setEventInviteStatus,
     getPendingEventsByUserID

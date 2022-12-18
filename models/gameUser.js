@@ -31,7 +31,9 @@ function getGamesByUserID(req, res){
             FROM games, game_users
             
             WHERE games.game_id = game_users.game_id
-            AND game_users.user_id = ?`,
+            AND game_users.user_id = ?
+            
+            ORDER BY games.title`,
         [req.query.user_id]);
 
         connection.query(sql,  (err, result) => {
